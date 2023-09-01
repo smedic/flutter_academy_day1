@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_academy_day1/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,19 +14,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Academy Day 1',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlueAccent),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const LoginPage(),
     );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }
