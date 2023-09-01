@@ -3,7 +3,7 @@ import 'package:flutter_academy_day1/car_screen.dart';
 import 'package:flutter_academy_day1/styling.dart';
 import 'package:flutter_academy_day1/widgets/car_item.dart';
 
-import 'models/Car.dart';
+import 'models/car.dart';
 
 class Cars extends StatefulWidget {
   const Cars({super.key});

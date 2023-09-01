@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_academy_day1/models/Car.dart';
+import 'package:flutter_academy_day1/models/car.dart';
 
 class CarItem extends StatelessWidget {
   const CarItem({super.key, required this.car});

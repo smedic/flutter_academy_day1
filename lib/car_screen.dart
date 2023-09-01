@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_academy_day1/models/Car.dart';
+import 'package:flutter_academy_day1/models/car.dart';
 
 class CarScreen extends StatefulWidget {
   const CarScreen({super.key, required this.onAddCarr});
