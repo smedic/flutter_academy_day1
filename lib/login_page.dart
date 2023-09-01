@@ -59,7 +59,7 @@ class LoginPage extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () {
                       Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const Cars()),
+                        MaterialPageRoute(builder: (context) => Cars()),
                       );
                     },
                     child: Text('Login'),
