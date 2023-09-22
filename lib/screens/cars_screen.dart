@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_academy_day1/stores/cars_store.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../decorations.dart';
 import '../models/car.dart';
@@ -14,23 +16,26 @@ class CarsScreen extends StatefulWidget {
 }
 
 class _CarsScreenState extends State<CarsScreen> {
+  final _store = CarsStore();
+
   final _searchController = TextEditingController();
 
   final List<Car> _allCars = createDummyCars();
 
-  List<Car> _filteredCars = [];
-  final List<String> _selectedCarManufacturers = [];
+  // List<Car> _filteredCars = [];
+  // final List<String> _selectedCarManufacturers = [];
 
   @override
   void initState() {
     _searchController.addListener(_filterCars);
-    _filteredCars = [..._allCars];
+    // _filteredCars = [..._allCars];
     super.initState();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _store.dispose();
     super.dispose();
   }
 
@@ -47,12 +52,13 @@ class _CarsScreenState extends State<CarsScreen> {
     );
   }
 
+  //TODO
   void _removeCar(final Car car) {
     final carIndexInAllList = _allCars.indexOf(car);
-    final carIndexInFilteredList = _filteredCars.indexOf(car);
+    final carIndexInFilteredList = _store.filteredCars.indexOf(car);
     setState(() {
       _allCars.remove(car);
-      _filteredCars.remove(car);
+      _store.filteredCars.remove(car);
     });
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -64,7 +70,7 @@ class _CarsScreenState extends State<CarsScreen> {
           onPressed: () {
             setState(() {
               _allCars.insert(carIndexInAllList, car);
-              _filteredCars.insert(carIndexInFilteredList, car);
+              _store.filteredCars.insert(carIndexInFilteredList, car);
             });
           },
         ),
@@ -87,31 +93,32 @@ class _CarsScreenState extends State<CarsScreen> {
 
   void _filterCars() {
     ScaffoldMessenger.of(context).clearSnackBars();
-    setState(() {
-      final searchText = _searchController.text.toLowerCase();
-
-      _filteredCars = [..._allCars];
-
-      //apply search term
-      if (searchText.isNotEmpty) {
-        _filteredCars = _filteredCars
-            .where((car) =>
-                ("${car.manufacturer.toLowerCase()} ${car.name.toLowerCase()}")
-                    .contains(searchText.toLowerCase()))
-            .toList();
-      }
-
-      //apply filter by manufacturer
-      if (_selectedCarManufacturers.isNotEmpty) {
-        _filteredCars = _filteredCars
-            .where((car) => _selectedCarManufacturers
-                .where((element) => element
-                    .toLowerCase()
-                    .contains(car.manufacturer.toLowerCase()))
-                .isNotEmpty)
-            .toList();
-      }
-    });
+    //_store.filterCars();
+    // setState(() {
+    //   final searchText = _searchController.text.toLowerCase();
+    //
+    //   _filteredCars = [..._allCars];
+    //
+    //   //apply search term
+    //   if (searchText.isNotEmpty) {
+    //     _filteredCars = _filteredCars
+    //         .where((car) =>
+    //             ("${car.manufacturer.toLowerCase()} ${car.name.toLowerCase()}")
+    //                 .contains(searchText.toLowerCase()))
+    //         .toList();
+    //   }
+    //
+    //   //apply filter by manufacturer
+    //   if (_selectedCarManufacturers.isNotEmpty) {
+    //     _filteredCars = _filteredCars
+    //         .where((car) => _selectedCarManufacturers
+    //             .where((element) => element
+    //                 .toLowerCase()
+    //                 .contains(car.manufacturer.toLowerCase()))
+    //             .isNotEmpty)
+    //         .toList();
+    //   }
+    // });
   }
 
   @override
@@ -162,26 +169,30 @@ class _CarsScreenState extends State<CarsScreen> {
                     onTap: _showBottomSheet,
                     child: Icon(
                       Icons.filter_list_outlined,
-                      color: _selectedCarManufacturers.isNotEmpty
-                          ? Colors.blue
-                          : Colors.black,
+                      color:
+                          _store.isFilterApplied ? Colors.blue : Colors.black,
                     ),
                   )
                 ],
               ),
             ),
-            if (_selectedCarManufacturers.isNotEmpty) ...[
-              const SizedBox(height: 8.0),
-              _selectedManufacturersList(),
-            ],
-            Expanded(
-              child: _filteredCars.isEmpty
-                  ? const EmptyListPlaceholder()
-                  : CarList(
-                      cars: _filteredCars,
-                      onRemoveCar: _removeCar,
-                      onCarClicked: _onCarClicked,
-                    ),
+            Observer(
+              builder: (_) => _store.isFilterApplied
+                  ? _selectedManufacturersList()
+                  : Container(),
+            ),
+            Observer(
+              builder: (BuildContext context) {
+                return Expanded(
+                  child: _store.filteredCars.isEmpty
+                      ? const EmptyListPlaceholder()
+                      : CarList(
+                          cars: _store.filteredCars,
+                          onRemoveCar: _removeCar,
+                          onCarClicked: _onCarClicked,
+                        ),
+                );
+              },
             ),
           ],
         ),
@@ -197,11 +208,11 @@ class _CarsScreenState extends State<CarsScreen> {
         spacing: 4.0,
         direction: Axis.horizontal,
         children: [
-          for (final manufacturer in _selectedCarManufacturers)
+          for (final manufacturer in _store.selectedCarManufacturers)
             InkWell(
               onTap: () {
                 setState(() {
-                  _selectedCarManufacturers.remove(manufacturer);
+                  _store.selectedCarManufacturers.remove(manufacturer);
                   _filterCars();
                 });
               },
@@ -243,22 +254,23 @@ class _CarsScreenState extends State<CarsScreen> {
               child: ListView.builder(
                 itemCount: carManufacturers.length,
                 itemBuilder: (context, index) {
-                  return StatefulBuilder(
-                    builder: (context, state) {
-                      final manufacturer = carManufacturers[index];
+                  final manufacturer = carManufacturers[index];
+                  return Observer(
+                    builder: (BuildContext context) {
+                      print("Observeddd");
                       return CheckboxListTile(
                         title: Text(manufacturer),
-                        value: _selectedCarManufacturers.contains(manufacturer),
+                        value: _store.selectedCarManufacturers
+                            .contains(manufacturer),
                         onChanged: (isSelected) {
-                          state(() {
-                            if (isSelected ?? false) {
-                              _selectedCarManufacturers.add(manufacturer);
-                            } else {
-                              _selectedCarManufacturers.remove(manufacturer);
-                            }
-                          });
-                          setState(() {});
-                          _filterCars();
+                          if (isSelected ?? false) {
+                            _store.selectedCarManufacturers.add(manufacturer);
+                          } else {
+                            _store.selectedCarManufacturers
+                                .remove(manufacturer);
+                          }
+                          // setState(() {});
+                          // _filterCars();
                         },
                       );
                     },

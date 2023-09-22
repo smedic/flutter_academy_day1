@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_academy_day1/decorations.dart';
+import 'package:flutter_academy_day1/widgets/CustomButton.dart';
 
-import '../decorations.dart';
 import 'cars_screen.dart';
 
 class StartScreen extends StatelessWidget {
@@ -74,7 +74,13 @@ class StartScreen extends StatelessWidget {
                     style: TextStyle(color: Color(0xFF333333)),
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 20),
+              CustomButton(
+                title: 'Press me',
+                onClick: () => print('On click'),
+                icon: const Icon(Icons.access_alarm_outlined),
+              ),
             ],
           ),
         ),
