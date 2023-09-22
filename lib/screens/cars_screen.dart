@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_academy_day1/bloc/cars_bloc.dart';
+import 'package:flutter_academy_day1/bloc/cars_event.dart';
+import 'package:flutter_academy_day1/bloc/cars_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../decorations.dart';
 import '../models/car.dart';
@@ -16,15 +20,15 @@ class CarsScreen extends StatefulWidget {
 class _CarsScreenState extends State<CarsScreen> {
   final _searchController = TextEditingController();
 
-  final List<Car> _allCars = createDummyCars();
-
-  List<Car> _filteredCars = [];
+  // final List<Car> _allCars = createDummyCars();
+  //
+  // List<Car> _filteredCars = [];
   final List<String> _selectedCarManufacturers = [];
 
   @override
   void initState() {
     _searchController.addListener(_filterCars);
-    _filteredCars = [..._allCars];
+    // _filteredCars = [..._allCars];
     super.initState();
   }
 
@@ -48,70 +52,73 @@ class _CarsScreenState extends State<CarsScreen> {
   }
 
   void _removeCar(final Car car) {
-    final carIndexInAllList = _allCars.indexOf(car);
-    final carIndexInFilteredList = _filteredCars.indexOf(car);
-    setState(() {
-      _allCars.remove(car);
-      _filteredCars.remove(car);
-    });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 3),
-        content: const Text('Car deleted'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {
-            setState(() {
-              _allCars.insert(carIndexInAllList, car);
-              _filteredCars.insert(carIndexInFilteredList, car);
-            });
-          },
-        ),
-      ),
-    );
+    BlocProvider.of<CarsBloc>(context).add(RemoveCarEvent(carObj: car));
+    // final carIndexInAllList = _allCars.indexOf(car);
+    // final carIndexInFilteredList = _filteredCars.indexOf(car);
+    // setState(() {
+    //   _allCars.remove(car);
+    //   _filteredCars.remove(car);
+    // });
+    // ScaffoldMessenger.of(context).clearSnackBars();
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     duration: const Duration(seconds: 3),
+    //     content: const Text('Car deleted'),
+    //     action: SnackBarAction(
+    //       label: 'Undo',
+    //       onPressed: () {
+    //         setState(() {
+    //           _allCars.insert(carIndexInAllList, car);
+    //           _filteredCars.insert(carIndexInFilteredList, car);
+    //         });
+    //       },
+    //     ),
+    //   ),
+    // );
   }
 
   void _editCar(Car editedCar) {
-    final indexOfEditedCar =
-        _allCars.indexWhere((car) => car.id == editedCar.id);
-    _allCars.removeAt(indexOfEditedCar);
-    _allCars.insert(indexOfEditedCar, editedCar);
-    _filterCars();
+    //   final indexOfEditedCar =
+    //       _allCars.indexWhere((car) => car.id == editedCar.id);
+    //   _allCars.removeAt(indexOfEditedCar);
+    //   _allCars.insert(indexOfEditedCar, editedCar);
+    //   _filterCars();
   }
 
+  //
   void _addCar(Car car) {
-    _allCars.add(car);
-    _filterCars();
+    BlocProvider.of<CarsBloc>(context).add(AddCarEvent(carObj: car));
+    // _allCars.add(car);
+    // _filterCars();
   }
 
   void _filterCars() {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    setState(() {
-      final searchText = _searchController.text.toLowerCase();
-
-      _filteredCars = [..._allCars];
-
-      //apply search term
-      if (searchText.isNotEmpty) {
-        _filteredCars = _filteredCars
-            .where((car) =>
-                ("${car.manufacturer.toLowerCase()} ${car.name.toLowerCase()}")
-                    .contains(searchText.toLowerCase()))
-            .toList();
-      }
-
-      //apply filter by manufacturer
-      if (_selectedCarManufacturers.isNotEmpty) {
-        _filteredCars = _filteredCars
-            .where((car) => _selectedCarManufacturers
-                .where((element) => element
-                    .toLowerCase()
-                    .contains(car.manufacturer.toLowerCase()))
-                .isNotEmpty)
-            .toList();
-      }
-    });
+    // ScaffoldMessenger.of(context).clearSnackBars();
+    // setState(() {
+    //   final searchText = _searchController.text.toLowerCase();
+    //
+    //   _filteredCars = [..._allCars];
+    //
+    //   //apply search term
+    //   if (searchText.isNotEmpty) {
+    //     _filteredCars = _filteredCars
+    //         .where((car) =>
+    //             ("${car.manufacturer.toLowerCase()} ${car.name.toLowerCase()}")
+    //                 .contains(searchText.toLowerCase()))
+    //         .toList();
+    //   }
+    //
+    //   //apply filter by manufacturer
+    //   if (_selectedCarManufacturers.isNotEmpty) {
+    //     _filteredCars = _filteredCars
+    //         .where((car) => _selectedCarManufacturers
+    //             .where((element) => element
+    //                 .toLowerCase()
+    //                 .contains(car.manufacturer.toLowerCase()))
+    //             .isNotEmpty)
+    //         .toList();
+    //   }
+    // });
   }
 
   @override
@@ -175,14 +182,22 @@ class _CarsScreenState extends State<CarsScreen> {
               _selectedManufacturersList(),
             ],
             Expanded(
-              child: _filteredCars.isEmpty
-                  ? const EmptyListPlaceholder()
-                  : CarList(
-                      cars: _filteredCars,
+              child: BlocBuilder<CarsBloc, CarsState>(
+                builder: (BuildContext context, CarsState state) {
+                  if (state is EmptyCarsState) {
+                    return EmptyListPlaceholder();
+                  } else if (state is LoadedCarsState) {
+                    return CarList(
+                      cars: state.cars,
                       onRemoveCar: _removeCar,
                       onCarClicked: _onCarClicked,
-                    ),
-            ),
+                    );
+                  } else {
+                    return const Spacer();
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

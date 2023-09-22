@@ -1,5 +1,8 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_academy_day1/bloc/cars_bloc.dart';
+import 'package:flutter_academy_day1/bloc/cars_event.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../decorations.dart';
 import 'cars_screen.dart';
@@ -65,6 +68,7 @@ class StartScreen extends StatelessWidget {
                     foregroundColor: Colors.white,
                   ),
                   onPressed: () {
+                    BlocProvider.of<CarsBloc>(context).add(const GetAllCarsEvent());
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(builder: (ctx) => const CarsScreen()),
                     );
