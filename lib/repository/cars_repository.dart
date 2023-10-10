@@ -21,8 +21,6 @@ class CarsRepository {
     try {
       final Map<String, dynamic> response = await DioClient.instance
           .post(carsPath, data: json.encode(car.toJson()));
-      final keys = response.keys;
-      final values = response.values;
       return response['name'];
     } on DioException {
       rethrow;
