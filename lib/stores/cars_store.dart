@@ -1,4 +1,5 @@
 import 'package:flutter_academy_day1/models/car.dart';
+import 'package:flutter_academy_day1/repository/cars_repository.dart';
 import 'package:mobx/mobx.dart';
 
 part 'cars_store.g.dart';
@@ -6,7 +7,11 @@ part 'cars_store.g.dart';
 class CarsStore extends _CarsStore with _$CarsStore {}
 
 abstract class _CarsStore with Store {
-  final List<Car> _allCars = createDummyCars();
+  final carsRepository = CarsRepository();
+  final List<Car> _allCars = [];
+
+  @observable
+  bool isLoading = false;
 
   @readonly
   ObservableList<Car> _filteredCars = ObservableList<Car>();
@@ -21,17 +26,40 @@ abstract class _CarsStore with Store {
 
   _CarsStore() {
     _setupReactions();
-    _filteredCars.addAll(_allCars);
-    fetchCars();
   }
 
   ReactionDisposer? _disposer;
 
   void _setupReactions() {
     _disposer = reaction((p0) => selectedCarManufacturers.iterator, (items) {
-      print("List changed: ${_filteredCars.length}");
       _filterCars();
     });
+  }
+
+  void addCar(final Car car) {
+    _allCars.add(car);
+    _filterCars();
+  }
+
+  void removeSelectedCarManufacturer(final String manufacturer) {
+    selectedCarManufacturers.remove(manufacturer);
+    _filterCars();
+  }
+
+  void editCar(final Car editedCar) {
+    final indexOfEditedCar =
+        _allCars.indexWhere((car) => car.id == editedCar.id);
+    _allCars.removeAt(indexOfEditedCar);
+    _allCars.insert(indexOfEditedCar, editedCar);
+    _filterCars();
+  }
+
+  (int, int) removeCar(final Car car) {
+    final carIndexInAllList = _allCars.indexOf(car);
+    final carIndexInFilteredList = _filteredCars.indexOf(car);
+    _allCars.remove(car);
+    _filteredCars.remove(car);
+    return (carIndexInAllList, carIndexInFilteredList);
   }
 
   void _filterCars() {
@@ -56,5 +84,11 @@ abstract class _CarsStore with Store {
     _disposer?.call();
   }
 
-  void fetchCars() {}
+  Future fetchCars() async {
+    isLoading = true;
+    final cars = await carsRepository.fetchCars();
+    _allCars.addAll(cars);
+    _filteredCars.addAll(cars);
+    isLoading = false;
+  }
 }

@@ -20,15 +20,11 @@ class _CarsScreenState extends State<CarsScreen> {
 
   final _searchController = TextEditingController();
 
-  final List<Car> _allCars = createDummyCars();
-
-  // List<Car> _filteredCars = [];
-  // final List<String> _selectedCarManufacturers = [];
+  final List<Car> _allCars = [];
 
   @override
   void initState() {
-    _searchController.addListener(_filterCars);
-    // _filteredCars = [..._allCars];
+    _store.fetchCars();
     super.initState();
   }
 
@@ -54,12 +50,7 @@ class _CarsScreenState extends State<CarsScreen> {
 
   //TODO
   void _removeCar(final Car car) {
-    final carIndexInAllList = _allCars.indexOf(car);
-    final carIndexInFilteredList = _store.filteredCars.indexOf(car);
-    setState(() {
-      _allCars.remove(car);
-      _store.filteredCars.remove(car);
-    });
+    final (carIndexInAllList, carIndexInFilteredList) = _store.removeCar(car);
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -78,48 +69,9 @@ class _CarsScreenState extends State<CarsScreen> {
     );
   }
 
-  void _editCar(Car editedCar) {
-    final indexOfEditedCar =
-        _allCars.indexWhere((car) => car.id == editedCar.id);
-    _allCars.removeAt(indexOfEditedCar);
-    _allCars.insert(indexOfEditedCar, editedCar);
-    _filterCars();
-  }
+  void _editCar(final Car editedCar) => _store.editCar;
 
-  void _addCar(Car car) {
-    _allCars.add(car);
-    _filterCars();
-  }
-
-  void _filterCars() {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    //_store.filterCars();
-    // setState(() {
-    //   final searchText = _searchController.text.toLowerCase();
-    //
-    //   _filteredCars = [..._allCars];
-    //
-    //   //apply search term
-    //   if (searchText.isNotEmpty) {
-    //     _filteredCars = _filteredCars
-    //         .where((car) =>
-    //             ("${car.manufacturer.toLowerCase()} ${car.name.toLowerCase()}")
-    //                 .contains(searchText.toLowerCase()))
-    //         .toList();
-    //   }
-    //
-    //   //apply filter by manufacturer
-    //   if (_selectedCarManufacturers.isNotEmpty) {
-    //     _filteredCars = _filteredCars
-    //         .where((car) => _selectedCarManufacturers
-    //             .where((element) => element
-    //                 .toLowerCase()
-    //                 .contains(car.manufacturer.toLowerCase()))
-    //             .isNotEmpty)
-    //         .toList();
-    //   }
-    // });
-  }
+  void _addCar(Car car) => _store.addCar;
 
   @override
   Widget build(final BuildContext context) {
@@ -183,6 +135,13 @@ class _CarsScreenState extends State<CarsScreen> {
             ),
             Observer(
               builder: (BuildContext context) {
+                if (_store.isLoading) {
+                  return const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
                 return Expanded(
                   child: _store.filteredCars.isEmpty
                       ? const EmptyListPlaceholder()
@@ -212,8 +171,7 @@ class _CarsScreenState extends State<CarsScreen> {
             InkWell(
               onTap: () {
                 setState(() {
-                  _store.selectedCarManufacturers.remove(manufacturer);
-                  _filterCars();
+                  _store.removeSelectedCarManufacturer(manufacturer);
                 });
               },
               child: Container(
@@ -257,7 +215,6 @@ class _CarsScreenState extends State<CarsScreen> {
                   final manufacturer = carManufacturers[index];
                   return Observer(
                     builder: (BuildContext context) {
-                      print("Observeddd");
                       return CheckboxListTile(
                         title: Text(manufacturer),
                         value: _store.selectedCarManufacturers
@@ -269,8 +226,6 @@ class _CarsScreenState extends State<CarsScreen> {
                             _store.selectedCarManufacturers
                                 .remove(manufacturer);
                           }
-                          // setState(() {});
-                          // _filterCars();
                         },
                       );
                     },
