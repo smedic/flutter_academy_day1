@@ -92,7 +92,6 @@ class _CarScreenState extends State<CarScreen> {
       return;
     }
     final car = Car(
-      id: const Uuid().v4(),
       name: _nameController.text,
       manufacturer: _manufacturerController.text,
       price: price,
@@ -101,7 +100,8 @@ class _CarScreenState extends State<CarScreen> {
       fuelType: _selectedFuelType,
     );
     if (widget.car == null) {
-      await _store.addNewCar(car);
+      final response = await _store.addNewCar(car);
+      car.id = response['name'];
       widget.onAddCar(car);
     } else {
       car.id = widget.car!.id;

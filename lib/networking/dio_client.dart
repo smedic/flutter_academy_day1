@@ -58,4 +58,16 @@ class DioClient {
       rethrow;
     }
   }
+
+  Future<dynamic> delete(String path) async {
+    try {
+      final Response response = await _dio.delete(path);
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      throw Exception('Something went wrong');
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

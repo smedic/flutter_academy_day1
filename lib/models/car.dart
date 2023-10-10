@@ -17,7 +17,7 @@ const Map<FuelType, IconData> fuelTypeIcons = {
 
 class Car {
   Car({
-    required this.id,
+    this.id = "",
     required this.name,
     required this.manufacturer,
     required this.price,
@@ -38,14 +38,14 @@ class Car {
     return formatter.format(lastRegistrationDate);
   }
 
-  factory Car.fromJson(Map<String, dynamic> json) {
-    final id = json['id'];
-    final name = json['name'];
-    final manufacturer = json['manufacturer'];
-    final price = json['price'];
-    final lastRegistrationDate = json['lastRegistrationDate'];
-    final year = json['year'];
-    final fuelType = FuelType.values.firstWhere((e) => e.name == json['fuelType']);
+  factory Car.fromJson(MapEntry<String, dynamic> json) {
+    final id = json.key;
+    final name = json.value['name'];
+    final manufacturer = json.value['manufacturer'];
+    final price = json.value['price'];
+    final lastRegistrationDate = json.value['lastRegistrationDate'];
+    final year = json.value['year'];
+    final fuelType = FuelType.values.firstWhere((e) => e.name == json.value['fuelType']);
     return Car(
       name: name,
       manufacturer: manufacturer,

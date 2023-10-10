@@ -59,6 +59,7 @@ abstract class _CarsStore with Store {
     final carIndexInFilteredList = _filteredCars.indexOf(car);
     _allCars.remove(car);
     _filteredCars.remove(car);
+    carsRepository.deleteCar(car.id);
     return (carIndexInAllList, carIndexInFilteredList);
   }
 
