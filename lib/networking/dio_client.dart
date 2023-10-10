@@ -65,6 +65,23 @@ class DioClient {
       if (response.statusCode == 200) {
         return response.data;
       }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> put(
+    String path, {
+    data,
+  }) async {
+    try {
+      final Response response = await _dio.put(
+        path,
+        data: data,
+      );
+      if (response.statusCode == 200) {
+        return response.data;
+      }
       throw Exception('Something went wrong');
     } catch (e) {
       rethrow;

@@ -100,7 +100,17 @@ abstract class _CarsStore with Store {
   Future addNewCar(Car car) async {
     isLoading = true;
     try {
-      final cars = await carsRepository.addNewCar(car);
+      await carsRepository.addNewCar(car);
+    } catch (ex) {
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future editCarApi(Car car) async {
+    isLoading = true;
+    try {
+      final cars = await carsRepository.editCar(car);
     } catch (ex) {
     } finally {
       isLoading = false;

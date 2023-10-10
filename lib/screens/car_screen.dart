@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:uuid/uuid.dart';
 
 import '../decorations.dart';
 import '../models/car.dart';
@@ -105,6 +104,7 @@ class _CarScreenState extends State<CarScreen> {
       widget.onAddCar(car);
     } else {
       car.id = widget.car!.id;
+      await _store.editCarApi(car);
       widget.onEditCar(car);
     }
     if (context.mounted) {
