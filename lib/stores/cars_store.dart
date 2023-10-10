@@ -97,11 +97,12 @@ abstract class _CarsStore with Store {
     }
   }
 
-  Future addNewCar(Car car) async {
+  Future<String?> addNewCar(Car car) async {
     isLoading = true;
     try {
-      await carsRepository.addNewCar(car);
+     return await carsRepository.addNewCar(car);
     } catch (ex) {
+      return null;
     } finally {
       isLoading = false;
     }

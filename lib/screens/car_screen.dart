@@ -99,9 +99,11 @@ class _CarScreenState extends State<CarScreen> {
       fuelType: _selectedFuelType,
     );
     if (widget.car == null) {
-      final response = await _store.addNewCar(car);
-      car.id = response['name'];
-      widget.onAddCar(car);
+      final carId = await _store.addNewCar(car);
+      if (carId != null) {
+        car.id = carId;
+        widget.onAddCar(car);
+      }
     } else {
       car.id = widget.car!.id;
       await _store.editCarApi(car);

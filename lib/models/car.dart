@@ -59,7 +59,6 @@ class Car {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
       'manufacturer': manufacturer,
       'price': price,

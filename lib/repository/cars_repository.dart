@@ -19,8 +19,10 @@ class CarsRepository {
 
   Future<String> addNewCar(Car car) async {
     try {
-      final response = await DioClient.instance
+      final Map<String, dynamic> response = await DioClient.instance
           .post(carsPath, data: json.encode(car.toJson()));
+      final keys = response.keys;
+      final values = response.values;
       return response['name'];
     } on DioException {
       rethrow;
@@ -30,7 +32,7 @@ class CarsRepository {
   Future<String> editCar(Car car) async {
     try {
       final response = await DioClient.instance
-          .put(carsPath, data: json.encode(car.toJson()));
+          .put(carPath(car.id), data: json.encode(car.toJson()));
       return response['name'];
     } on DioException {
       rethrow;
