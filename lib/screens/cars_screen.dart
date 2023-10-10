@@ -59,19 +59,23 @@ class _CarsScreenState extends State<CarsScreen> {
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
-            setState(() {
-              _allCars.insert(carIndexInAllList, car);
-              _store.filteredCars.insert(carIndexInFilteredList, car);
-            });
+            setState(
+              () {
+                _allCars.insert(carIndexInAllList, car);
+                _store.filteredCars.insert(carIndexInFilteredList, car);
+              },
+            );
           },
         ),
       ),
     );
   }
 
-  void _editCar(final Car editedCar) => _store.editCar;
+  void _editCar(final Car editedCar) => _store.editCar(editedCar);
 
-  void _addCar(Car car) => _store.addCar;
+  void _addCar(Car car) {
+    _store.addCar(car);
+  }
 
   @override
   Widget build(final BuildContext context) {

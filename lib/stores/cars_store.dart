@@ -86,9 +86,23 @@ abstract class _CarsStore with Store {
 
   Future fetchCars() async {
     isLoading = true;
-    final cars = await carsRepository.fetchCars();
-    _allCars.addAll(cars);
-    _filteredCars.addAll(cars);
-    isLoading = false;
+    try {
+      final cars = await carsRepository.fetchCars();
+      _allCars.addAll(cars);
+      _filteredCars.addAll(cars);
+    } catch (ex) {
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future addNewCar(Car car) async {
+    isLoading = true;
+    try {
+      final cars = await carsRepository.addNewCar(car);
+    } catch (ex) {
+    } finally {
+      isLoading = false;
+    }
   }
 }
