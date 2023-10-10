@@ -16,6 +16,8 @@ class DioClient {
         HttpHeaders.userAgentHeader: 'dio',
         'api': '1.0.0',
       },
+      validateStatus: (statusCode) =>
+          statusCode == null ? false : statusCode >= 200 && statusCode < 400,
       contentType: Headers.jsonContentType,
       connectTimeout: const Duration(seconds: 60),
       receiveTimeout: const Duration(seconds: 60),
@@ -34,15 +36,11 @@ class DioClient {
     try {
       Response response =
           await _dio.get(path, queryParameters: queryParameters);
-      if (response.statusCode == 200) {
-        if (response.data == null || response.data == 'null') {
-          return {};
-        }
-        return response.data;
-      } else {
-        throw Exception('Something went wrong');
+      if (response.data == null || response.data == 'null') {
+        return {};
       }
-    } catch (ex) {
+      return response.data;
+    } on DioException {
       rethrow;
     }
   }
@@ -50,11 +48,8 @@ class DioClient {
   Future<Map<String, dynamic>> post(String path, {Object? data}) async {
     try {
       final Response response = await _dio.post(path, data: data);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return response.data;
-      }
-      throw Exception('Something went wrong');
-    } catch (e) {
+      return response.data;
+    } on DioException {
       rethrow;
     }
   }
@@ -62,10 +57,8 @@ class DioClient {
   Future<dynamic> delete(String path) async {
     try {
       final Response response = await _dio.delete(path);
-      if (response.statusCode == 200) {
-        return response.data;
-      }
-    } catch (e) {
+      return response.data;
+    } on DioException {
       rethrow;
     }
   }
@@ -79,11 +72,8 @@ class DioClient {
         path,
         data: data,
       );
-      if (response.statusCode == 200) {
-        return response.data;
-      }
-      throw Exception('Something went wrong');
-    } catch (e) {
+      return response.data;
+    } on DioException {
       rethrow;
     }
   }
