@@ -59,6 +59,7 @@ abstract class _CarsStore with Store {
     final carIndexInFilteredList = _filteredCars.indexOf(car);
     _allCars.remove(car);
     _filteredCars.remove(car);
+    carsRepository.deleteCar(car.id);
     return (carIndexInAllList, carIndexInFilteredList);
   }
 
@@ -90,5 +91,26 @@ abstract class _CarsStore with Store {
     _allCars.addAll(cars);
     _filteredCars.addAll(cars);
     isLoading = false;
+  }
+
+  Future<String?> addNewCar(Car car) async {
+    isLoading = true;
+    try {
+      return await carsRepository.addNewCar(car);
+    } catch (ex) {
+      return null;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<void> editCarApi(Car car) async {
+    isLoading = true;
+    try {
+      await carsRepository.editCar(car);
+    } catch (ex) {
+    } finally {
+      isLoading = false;
+    }
   }
 }

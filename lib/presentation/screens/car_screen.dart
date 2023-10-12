@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../domain/models/car.dart';
 import '../decorations.dart';
+import '../stores/cars_store.dart';
 
 class CarScreen extends StatefulWidget {
   const CarScreen({
@@ -21,6 +23,8 @@ class CarScreen extends StatefulWidget {
 }
 
 class _CarScreenState extends State<CarScreen> {
+  final _store = CarsStore();
+
   final _nameController = TextEditingController();
   final _manufacturerController = TextEditingController();
   final _yearController = TextEditingController();
@@ -56,7 +60,7 @@ class _CarScreenState extends State<CarScreen> {
     });
   }
 
-  void _saveCarData() {
+  Future<void> _saveCarData() async {
     final price = double.tryParse(_priceController.text);
     final year = int.tryParse(_yearController.text);
     final invalidPrice = price == null || price <= 0;
@@ -95,12 +99,19 @@ class _CarScreenState extends State<CarScreen> {
       fuelType: _selectedFuelType,
     );
     if (widget.car == null) {
-      widget.onAddCar(car);
+      final carId = await _store.addNewCar(car);
+      if (carId != null) {
+        car.id = carId;
+        widget.onAddCar(car);
+      }
     } else {
       car.id = widget.car!.id;
+      await _store.editCarApi(car);
       widget.onEditCar(car);
     }
-    Navigator.pop(context);
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -108,6 +119,7 @@ class _CarScreenState extends State<CarScreen> {
     _nameController.dispose();
     _priceController.dispose();
     _yearController.dispose();
+    _store.dispose();
     super.dispose();
   }
 
@@ -222,20 +234,33 @@ class _CarScreenState extends State<CarScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: _saveCarData,
-                      child: const Text('Save car'),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
+                  Observer(
+                    builder: (BuildContext context) {
+                      if (_store.isLoading) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                            width: double.infinity,
+                            child: OutlinedButton(
+                              onPressed: _saveCarData,
+                              child: const Text('Save car'),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                        ],
+                      );
                     },
-                    child: const Text('Cancel'),
                   ),
                 ],
               ),

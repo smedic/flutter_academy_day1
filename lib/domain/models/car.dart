@@ -16,7 +16,6 @@ const Map<FuelType, IconData> fuelTypeIcons = {
 };
 
 class Car {
-
   Car(
       {required this.name,
       required this.manufacturer,
@@ -59,6 +58,17 @@ class Car {
       lastRegistrationDate: lastRegistrationDate,
       fuelType: fuelType,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'manufacturer': manufacturer,
+      'price': price,
+      'lastRegistrationDate': formattedDate,
+      'fuelType': fuelType.name,
+      'year': year,
+    };
   }
 }
 

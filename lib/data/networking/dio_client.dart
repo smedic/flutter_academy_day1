@@ -50,4 +50,37 @@ class DioClient {
       rethrow;
     }
   }
+
+  Future<Map<String, dynamic>> post(String path, {Object? data}) async {
+    try {
+      final Response response = await _dio.post(path, data: data);
+      return response.data;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> delete(String path) async {
+    try {
+      final Response response = await _dio.delete(path);
+      return response.data;
+    } on DioException {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> put(
+      String path, {
+        data,
+      }) async {
+    try {
+      final Response response = await _dio.put(
+        path,
+        data: data,
+      );
+      return response.data;
+    } on DioException {
+      rethrow;
+    }
+  }
 }
