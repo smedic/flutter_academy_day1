@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../domain/models/car.dart';
 import '../decorations.dart';
-import '../models/car.dart';
 
 class CarScreen extends StatefulWidget {
   const CarScreen({

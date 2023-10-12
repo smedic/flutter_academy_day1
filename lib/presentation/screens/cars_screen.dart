@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_academy_day1/stores/cars_store.dart';
+import 'package:flutter_academy_day1/domain/models/car.dart';
+import 'package:flutter_academy_day1/presentation/stores/cars_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../decorations.dart';
-import '../models/car.dart';
 import '../widgets/car_list.dart';
 import '../widgets/empty_list_placeholder.dart';
 import 'car_screen.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter_academy_day1/models/car.dart';
+import 'package:flutter_academy_day1/domain/models/car.dart';
 
 class CarsRepository {
   Future<List<Car>> fetchCars() {

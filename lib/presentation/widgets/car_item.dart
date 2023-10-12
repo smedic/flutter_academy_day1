@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../models/car.dart';
+import 'package:flutter_academy_day1/domain/models/car.dart';
 
 class CarItem extends StatelessWidget {
   const CarItem(
