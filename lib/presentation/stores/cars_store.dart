@@ -5,10 +5,12 @@ import 'package:mobx/mobx.dart';
 
 part 'cars_store.g.dart';
 
-class CarsStore extends _CarsStore with _$CarsStore {}
+class CarsStore extends _CarsStore with _$CarsStore {
+  CarsStore(super.carsRepository);
+}
 
 abstract class _CarsStore with Store {
-  final carsRepository = CarsRepository();
+  final CarsRepository carsRepository;
   final List<Car> _allCars = [];
 
   @observable
@@ -25,7 +27,7 @@ abstract class _CarsStore with Store {
     return selectedCarManufacturers.isNotEmpty;
   }
 
-  _CarsStore() {
+  _CarsStore(this.carsRepository) {
     _setupReactions();
   }
 
@@ -91,8 +93,7 @@ abstract class _CarsStore with Store {
       final cars = await carsRepository.fetchCars();
       _allCars.addAll(cars);
       _filteredCars.addAll(cars);
-    } on DioException catch(ex){
-
+    } on DioException catch (ex) {
     } finally {
       isLoading = false;
     }

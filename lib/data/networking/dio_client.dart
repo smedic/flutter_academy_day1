@@ -7,11 +7,11 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 class DioClient {
   late Dio _dio;
 
-  DioClient._() {
+  DioClient() {
     initialise();
   }
 
-  static final instance = DioClient._();
+  static final instance = DioClient();
 
   void initialise() {
     _dio = Dio(

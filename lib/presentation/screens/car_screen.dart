@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_academy_day1/di/di.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../domain/models/car.dart';
@@ -23,7 +24,7 @@ class CarScreen extends StatefulWidget {
 }
 
 class _CarScreenState extends State<CarScreen> {
-  final _store = CarsStore();
+  final _store = DI.get<CarsStore>();
 
   final _nameController = TextEditingController();
   final _manufacturerController = TextEditingController();
