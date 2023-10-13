@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_academy_day1/data/repository/cars_repository.dart';
 import 'package:flutter_academy_day1/domain/models/car.dart';
 import 'package:mobx/mobx.dart';
@@ -86,9 +87,25 @@ abstract class _CarsStore with Store {
 
   Future fetchCars() async {
     isLoading = true;
-    final cars = await carsRepository.fetchCars();
-    _allCars.addAll(cars);
-    _filteredCars.addAll(cars);
-    isLoading = false;
+    try {
+      final cars = await carsRepository.fetchCars();
+      _allCars.addAll(cars);
+      _filteredCars.addAll(cars);
+    } on DioException catch(ex){
+
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<String?> addNewCar(Car car) async {
+    isLoading = true;
+    try {
+      return await carsRepository.addNewCar(car);
+    } catch (ex) {
+      return null;
+    } finally {
+      isLoading = false;
+    }
   }
 }
